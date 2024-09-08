@@ -9,6 +9,9 @@ from aqt.qt import *
 # be called when the menu item is activated.
 
 def testFunction() -> None:
+    # for each card in the collection
+    for card in mw.col.find_cards(""):
+        print(card)
     # get the number of cards in the current collection, which is stored in
     # the main window
     cardCount = mw.col.cardCount()
