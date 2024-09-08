@@ -1,26 +1,31 @@
-# import the main window object (mw) from aqt
+# Import the necessary objects
 from aqt import mw
-# import the "show info" tool from utils.py
-from aqt.utils import showInfo, qconnect
-# import all of the Qt GUI library
+from aqt.utils import qconnect
 from aqt.qt import *
-
 from anki.cards import Card
+from aqt.stats import DeckStats
 
-# We're going to add a menu item below. First we want to create a function to
-# be called when the menu item is activated.
+from aqt.gui_hooks import stats_dialog_will_show
 
-def testFunction() -> None:
-    col = mw.col
-    card_ids = col.db.list("SELECT id FROM cards")
+# Function to run for the current deck
+def generate_forest() -> None:
+    print("generating forest")
+    col = mw.col  # Get the collection object
+    # card_ids = col.find_cards("")
+
+    current_deck_id = mw.col.decks.current()['id']
+    print("id:", current_deck_id)
+    cards_in_deck = mw.col.find_cards(f"did:{current_deck_id}")
 
     # Function to check if a card is due
-    def is_card_due(card: Card) -> bool:
-        # Card is due if it's in the review queue and due <= today
-        return card.queue == 2 and card.due <= col.sched.today
+    def is_card_due(_card: Card) -> bool:
+        return _card.queue == 2 and _card.due <= col.sched.today
+
+    print(f"collections contains {len(cards_in_deck)} cards")
 
     # Iterate over the card IDs and get learning stats
-    for card_id in card_ids:
+    for card_id in cards_in_deck:
+        # print("card:", card_id)
         card = col.get_card(card_id)  # Get the Card object
 
         due_status = is_card_due(card)
@@ -28,8 +33,7 @@ def testFunction() -> None:
         reps = card.reps  # Number of repetitions
         ease = card.factor / 1000  # Ease factor
 
-        if due_status:
-
+        if False:
             print(f"Card ID: {card_id}")
             print(f"Due: {due_status}")
             print(f"Interval: {interval} days")
@@ -37,9 +41,15 @@ def testFunction() -> None:
             print(f"Ease: {ease}")
             print("----------")
 
-# create a new menu item, "test"
-action = QAction("test", mw)
-# set it to call testFunction when it's clicked
-qconnect(action.triggered, testFunction)
-# and add it to the tools menu
-mw.form.menuTools.addAction(action)
+
+# Add a button to the top of the stats view
+def on_stats_will_show(stats: DeckStats) -> None:
+    # Create a button and add it to the stats view
+    button = QPushButton("Run Test")
+    button.clicked.connect(generate_forest)
+
+    # Insert the button into the stats view
+    stats.form.verticalLayout.insertWidget(0, button)  # Insert the button at the top (index 0)
+
+# Hook the stats screen to add the button
+stats_dialog_will_show.append(on_stats_will_show)
