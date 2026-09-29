@@ -99,18 +99,14 @@ class TilemapWindow(QMainWindow):
 
     def get_size_for_interval(self, ivl, is_stump):
         """Map the card's interval to a corresponding tree or stump size."""
-        interval_mapping = {
-            1: 300,
-            3: 350,
-            8: 400,
-            15: 450,
-            30: 500
-        }
+        interval_thresholds = [1, 3, 8, 15, 30]
+        tree_sizes = [300, 350, 400, 450, 500]
         stump_sizes = [200, 250, 300, 350, 400]
 
-        # Find the closest matching interval
-        size_list = stump_sizes if is_stump else list(interval_mapping.values())
-        return min(size_list, key=lambda x: abs(ivl - x))
+        # Find the closest matching interval threshold, then pick the size at that index
+        index = min(range(len(interval_thresholds)), key=lambda i: abs(ivl - interval_thresholds[i]))
+        size_list = stump_sizes if is_stump else tree_sizes
+        return size_list[index]
 
     def select_random_image(self, tree_type, size):
         """Randomly select a tree or stump image based on size."""
