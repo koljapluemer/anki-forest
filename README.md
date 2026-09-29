@@ -1,5 +1,7 @@
 # Anki Forest
 
+![](screenshot.png)
+
 An [Anki](https://apps.ankiweb.net/) add-on that turns a deck into a forest. Each card you've studied becomes a tree, and each card that's due for review becomes a tree stump. The longer a card's review interval, the bigger its tree.
 
 > **Status:** early prototype. The core loop works, but the visuals are still rough (see [Known limitations](#known-limitations)).
@@ -54,6 +56,8 @@ ln -s "$(pwd)" ~/Library/Application\ Support/Anki2/addons21/anki_forest
 # Windows: %APPDATA%\Anki2\addons21\anki_forest
 ```
 
+Symlink may cause trouble, in that case: copy-paste;
+
 Restart Anki, choose a deck, open **Stats**, and click **Generate Forest**.
 
 Requirements: Anki 2.1.x or newer (uses `aqt.gui_hooks.stats_dialog_will_show` and the Qt bindings Anki ships with). There are no extra Python dependencies.
@@ -65,4 +69,4 @@ Debug output goes through `print()`. To see it, start Anki from a terminal.
 - **Performance:** each card loads its own `QPixmap` at full size (384×768), and the assets folder is re-listed for every card. Large decks will be slow and use a lot of memory.
 - **Zoom:** zooming resizes the labels but not the grid spacing.
 - **Packaging:** there's no `manifest.json` or `config.json` yet, so the add-on can't be packaged as an `.ankiaddon`.
-- **`tests.py`:** not an automated test suite, and Anki doesn't load it (only `__init__.py` is imported).
+- *It's just not very satisfying yet*
